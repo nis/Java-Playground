@@ -4,8 +4,7 @@ public class main {
 		
 		DialerFrame df = new DialerFrame("Ny titel!");
 		
-		//df.createDialerFrame("Howdy");
-		df.createButtonPanel();
+		df.createButtonPanel("Status: ");
 		df.setVisible(true);
 	}
 }
