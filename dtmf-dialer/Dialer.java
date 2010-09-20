@@ -163,24 +163,22 @@ public class Dialer {
 		btnHash.addActionListener(new ButtonListener());
 		btnStar.addActionListener(new ButtonListener());
 		
-		btn0.addKeyListener(new KeyListener());
-		btn1.addKeyListener(new KeyListener());
-		btn2.addKeyListener(new KeyListener());
-		btn3.addKeyListener(new KeyListener());
-		btn4.addKeyListener(new KeyListener());
-		btn5.addKeyListener(new KeyListener());
-		btn6.addKeyListener(new KeyListener());
-		btn7.addKeyListener(new KeyListener());
-		btn8.addKeyListener(new KeyListener());
-		btn9.addKeyListener(new KeyListener());
-		btnA.addKeyListener(new KeyListener());
-		btnB.addKeyListener(new KeyListener());
-		btnC.addKeyListener(new KeyListener());
-		btnD.addKeyListener(new KeyListener());
-		btnHash.addKeyListener(new KeyListener());
-		btnStar.addKeyListener(new KeyListener());
-		
-		dPanel.addKeyListener(new KeyListener());
+		btn0.setFocusable(false);
+		btn1.setFocusable(false);
+		btn2.setFocusable(false);
+		btn3.setFocusable(false);
+		btn4.setFocusable(false);
+		btn5.setFocusable(false);
+		btn6.setFocusable(false);
+		btn7.setFocusable(false);
+		btn8.setFocusable(false);
+		btn9.setFocusable(false);
+		btnA.setFocusable(false);
+		btnB.setFocusable(false);
+		btnC.setFocusable(false);
+		btnD.setFocusable(false);
+		btnStar.setFocusable(false);
+		btnHash.setFocusable(false);
 		
 		mFrame.addKeyListener(new KeyListener());
 	}
