@@ -47,24 +47,57 @@ public class Dialer {
 		class ButtonListener implements ActionListener {
 			public void actionPerformed (ActionEvent event) {
 				String st = "";
-				if (event.getSource() == btn0) { st = "Knap 0"; }
-				if (event.getSource() == btn1) { st = "Knap 1"; }
-				if (event.getSource() == btn2) { st = "Knap 2"; }
-				if (event.getSource() == btn3) { st = "Knap 3"; }
-				if (event.getSource() == btn4) { st = "Knap 4"; }
-				if (event.getSource() == btn5) { st = "Knap 5"; }
-				if (event.getSource() == btn6) { st = "Knap 6"; }
-				if (event.getSource() == btn7) { st = "Knap 7"; }
-				if (event.getSource() == btn8) { st = "Knap 8"; }
-				if (event.getSource() == btn9) { st = "Knap 9"; }
-				if (event.getSource() == btnA) { st = "Knap A"; }
-				if (event.getSource() == btnB) { st = "Knap B"; }
-				if (event.getSource() == btnC) { st = "Knap C"; }
-				if (event.getSource() == btnD) { st = "Knap D"; }
-				if (event.getSource() == btnStar) { st = "Knap Star"; }
-				if (event.getSource() == btnHash) { st = "Knap Hash"; }
+				if (event.getSource() == btn0) { 
+					st = "0";
+					try { generateTones(941.0F, 1336.0F, 100, 100); } catch(Exception e) { }
+					}
+				if (event.getSource() == btn1) { st = "1"; }
+				if (event.getSource() == btn2) { st = "2"; }
+				if (event.getSource() == btn3) { st = "3"; }
+				if (event.getSource() == btn4) { st = "4"; }
+				if (event.getSource() == btn5) { st = "5"; }
+				if (event.getSource() == btn6) { st = "6"; }
+				if (event.getSource() == btn7) { st = "7"; }
+				if (event.getSource() == btn8) { st = "8"; }
+				if (event.getSource() == btn9) { st = "9"; }
+				if (event.getSource() == btnA) { st = "A"; }
+				if (event.getSource() == btnB) { st = "B"; }
+				if (event.getSource() == btnC) { st = "C"; }
+				if (event.getSource() == btnD) { st = "D"; }
+				if (event.getSource() == btnStar) { st = "*"; }
+				if (event.getSource() == btnHash) { st = "#"; }
 				statusLabel.setText("Status: " + st);
 			}
+			
+			public void generateTones(float hz1,float hz2, int msecs, int volume) throws Exception {
+			        float frequency = 44100.0F;
+			        int samplesize = 8;
+			        int channels;
+			        boolean signed = true;
+			        boolean bigendian = false;
+			        byte[] buf;
+			        double ttpi = (2.0 * Math.PI);
+			        AudioFormat format;
+			        //buf = new byte[2];
+			        buf = new byte[1];
+			        //channels = 2;
+			        channels = 1;
+			        format = new AudioFormat(frequency, samplesize, channels, signed,
+			                                 bigendian);
+			        SourceDataLine sdl = AudioSystem.getSourceDataLine(format);
+			        sdl.open(format);
+			        sdl.start();
+			        for (int i = 0; i < msecs * frequency / 1000; i++)
+			        {
+			            double angle = i / (frequency / hz1)* ttpi;
+						double angle2 = i / (frequency / hz2) * ttpi;
+						buf[0] = (byte) (((Math.sin(angle)) + (Math.sin(angle2)))*10);
+						sdl.write(buf, 0, 1);
+			        }
+			        sdl.drain();
+			        sdl.stop();
+			        sdl.close();
+			    }
 		}
 		
 		btn0.addActionListener(new ButtonListener());
