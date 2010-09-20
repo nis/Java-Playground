@@ -37,7 +37,7 @@ public class Dialer {
 	public void init() {
 		mFrame = makeFrame();
 		dPanel = makePanel();
-		
+		mFrame.setFocusable(true);
 		mFrame.add(dPanel);
 		
 		addListeners();
