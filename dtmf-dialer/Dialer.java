@@ -46,6 +46,35 @@ public class Dialer {
 	}
 	
 	public void addListeners() {
+		
+		class KeyListener extends KeyAdapter {
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyChar()) {
+		        case '0': lyd.s0(100, 100); break;
+		        case '1': lyd.s1(100, 100); break;
+		        case '2': lyd.s2(100, 100); break;
+		        case '3': lyd.s3(100, 100); break;
+		        case '4': lyd.s4(100, 100); break;
+		        case '5': lyd.s5(100, 100); break;
+		        case '6': lyd.s6(100, 100); break;
+		        case '7': lyd.s7(100, 100); break;
+		        case '8': lyd.s8(100, 100); break;
+		        case '9': lyd.s9(100, 100); break;
+		        case '#': lyd.sHash(100, 100); break;
+		        case '*': lyd.sStar(100, 100); break;
+		        case 'a':
+		        case 'A': lyd.sA(100, 100); break;
+		        case 'b':
+		        case 'B': lyd.sB(100, 100); break;
+		        case 'c':
+		        case 'C': lyd.sC(100, 100); break;
+		        case 'd':
+		        case 'D': lyd.sD(100, 100); break;
+		        default:
+		      }
+			}
+		}
+		
 		class ButtonListener implements ActionListener {
 			public void actionPerformed (ActionEvent event) {
 				String st = "";
@@ -133,6 +162,27 @@ public class Dialer {
 		btnD.addActionListener(new ButtonListener());
 		btnHash.addActionListener(new ButtonListener());
 		btnStar.addActionListener(new ButtonListener());
+		
+		btn0.addKeyListener(new KeyListener());
+		btn1.addKeyListener(new KeyListener());
+		btn2.addKeyListener(new KeyListener());
+		btn3.addKeyListener(new KeyListener());
+		btn4.addKeyListener(new KeyListener());
+		btn5.addKeyListener(new KeyListener());
+		btn6.addKeyListener(new KeyListener());
+		btn7.addKeyListener(new KeyListener());
+		btn8.addKeyListener(new KeyListener());
+		btn9.addKeyListener(new KeyListener());
+		btnA.addKeyListener(new KeyListener());
+		btnB.addKeyListener(new KeyListener());
+		btnC.addKeyListener(new KeyListener());
+		btnD.addKeyListener(new KeyListener());
+		btnHash.addKeyListener(new KeyListener());
+		btnStar.addKeyListener(new KeyListener());
+		
+		dPanel.addKeyListener(new KeyListener());
+		
+		mFrame.addKeyListener(new KeyListener());
 	}
 	
 	public JPanel makePanel() {
