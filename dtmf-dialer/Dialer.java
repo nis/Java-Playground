@@ -27,6 +27,8 @@ public class Dialer {
 	
 	JLabel statusLabel = new JLabel();
 	
+	MySound lyd = new MySound();
+	
 	public static void main (String[] args) {
 		Dialer d = new Dialer();
 		d.init();
@@ -49,55 +51,70 @@ public class Dialer {
 				String st = "";
 				if (event.getSource() == btn0) { 
 					st = "0";
-					try { generateTones(941.0F, 1336.0F, 100, 100); } catch(Exception e) { }
-					}
-				if (event.getSource() == btn1) { st = "1"; }
-				if (event.getSource() == btn2) { st = "2"; }
-				if (event.getSource() == btn3) { st = "3"; }
-				if (event.getSource() == btn4) { st = "4"; }
-				if (event.getSource() == btn5) { st = "5"; }
-				if (event.getSource() == btn6) { st = "6"; }
-				if (event.getSource() == btn7) { st = "7"; }
-				if (event.getSource() == btn8) { st = "8"; }
-				if (event.getSource() == btn9) { st = "9"; }
-				if (event.getSource() == btnA) { st = "A"; }
-				if (event.getSource() == btnB) { st = "B"; }
-				if (event.getSource() == btnC) { st = "C"; }
-				if (event.getSource() == btnD) { st = "D"; }
-				if (event.getSource() == btnStar) { st = "*"; }
-				if (event.getSource() == btnHash) { st = "#"; }
+					lyd.s0(100, 100);
+				}
+				if (event.getSource() == btn1) {
+					st = "1";
+					lyd.s1(100, 100);
+				}
+				if (event.getSource() == btn2) { 
+					st = "2";
+					lyd.s2(100, 100);
+				}
+				if (event.getSource() == btn3) { 
+					st = "3";
+					lyd.s3(100, 100);
+				}
+				if (event.getSource() == btn4) { 
+					st = "4";
+					lyd.s4(100, 100);
+				}
+				if (event.getSource() == btn5) { 
+					st = "5";
+					lyd.s5(100, 100);
+				}
+				if (event.getSource() == btn6) { 
+					st = "6";
+					lyd.s6(100, 100);
+				}
+				if (event.getSource() == btn7) { 
+					st = "7";
+					lyd.s7(100, 100);
+				}
+				if (event.getSource() == btn8) { 
+					st = "8";
+					lyd.s8(100, 100);
+				}
+				if (event.getSource() == btn9) { 
+					st = "9";
+					lyd.s9(100, 100);
+				}
+				if (event.getSource() == btnA) { 
+					st = "A";
+					lyd.sA(100, 100);
+				}
+				if (event.getSource() == btnB) { 
+					st = "B";
+					lyd.sB(100, 100);
+				}
+				if (event.getSource() == btnC) { 
+					st = "C";
+					lyd.sC(100, 100);
+				}
+				if (event.getSource() == btnD) { 
+					st = "D";
+					lyd.sD(100, 100);
+				}
+				if (event.getSource() == btnStar) { 
+					st = "*";
+					lyd.sStar(100, 100);
+				}
+				if (event.getSource() == btnHash) { 
+					st = "#";
+					lyd.sHash(100, 100);
+				}
 				statusLabel.setText("Status: " + st);
 			}
-			
-			public void generateTones(float hz1,float hz2, int msecs, int volume) throws Exception {
-			        float frequency = 44100.0F;
-			        int samplesize = 8;
-			        int channels;
-			        boolean signed = true;
-			        boolean bigendian = false;
-			        byte[] buf;
-			        double ttpi = (2.0 * Math.PI);
-			        AudioFormat format;
-			        //buf = new byte[2];
-			        buf = new byte[1];
-			        //channels = 2;
-			        channels = 1;
-			        format = new AudioFormat(frequency, samplesize, channels, signed,
-			                                 bigendian);
-			        SourceDataLine sdl = AudioSystem.getSourceDataLine(format);
-			        sdl.open(format);
-			        sdl.start();
-			        for (int i = 0; i < msecs * frequency / 1000; i++)
-			        {
-			            double angle = i / (frequency / hz1)* ttpi;
-						double angle2 = i / (frequency / hz2) * ttpi;
-						buf[0] = (byte) (((Math.sin(angle)) + (Math.sin(angle2)))*10);
-						sdl.write(buf, 0, 1);
-			        }
-			        sdl.drain();
-			        sdl.stop();
-			        sdl.close();
-			    }
 		}
 		
 		btn0.addActionListener(new ButtonListener());
