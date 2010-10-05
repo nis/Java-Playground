@@ -2,8 +2,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+//import SoundQueue.*;
+
 public class Dialer {
-	String windowTitle = "Test";
+	String windowTitle = "DTMF Dialer";
 	JFrame mFrame;
 	
 	JPanel dPanel;
@@ -29,6 +31,10 @@ public class Dialer {
 	
 	MySound lyd = new MySound();
 	
+	MyListener mListener = new MyListener();
+	
+	SoundQueue sq = new SoundQueue();
+	
 	public static void main (String[] args) {
 		Dialer d = new Dialer();
 		d.init();
@@ -43,6 +49,17 @@ public class Dialer {
 		addListeners();
 		
 		mFrame.setVisible(true);
+		
+		
+		
+		//SoundQueue sq = new SoundQueue("0123456789ABCD*#");
+		
+		
+		Thread sT = new Thread(sq);
+		sT.start();
+		
+		Thread lT = new Thread(mListener);
+		lT.start();
 	}
 	
 	public void addListeners() {
@@ -50,28 +67,28 @@ public class Dialer {
 		class KeyListener extends KeyAdapter {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyChar()) {
-		        case '0': lyd.s0(100, 100); break;
-		        case '1': lyd.s1(100, 100); break;
-		        case '2': lyd.s2(100, 100); break;
-		        case '3': lyd.s3(100, 100); break;
-		        case '4': lyd.s4(100, 100); break;
-		        case '5': lyd.s5(100, 100); break;
-		        case '6': lyd.s6(100, 100); break;
-		        case '7': lyd.s7(100, 100); break;
-		        case '8': lyd.s8(100, 100); break;
-		        case '9': lyd.s9(100, 100); break;
-		        case '#': lyd.sHash(100, 100); break;
-		        case '*': lyd.sStar(100, 100); break;
-		        case 'a':
-		        case 'A': lyd.sA(100, 100); break;
-		        case 'b':
-		        case 'B': lyd.sB(100, 100); break;
-		        case 'c':
-		        case 'C': lyd.sC(100, 100); break;
-		        case 'd':
-		        case 'D': lyd.sD(100, 100); break;
-		        default:
-		      }
+		        	case '0': sq.addToQueue("0"); break;
+		        	case '1': sq.addToQueue("1"); break;
+		        	case '2': sq.addToQueue("2"); break;
+		        	case '3': sq.addToQueue("3"); break;
+		        	case '4': sq.addToQueue("4"); break;
+		        	case '5': sq.addToQueue("5"); break;
+		        	case '6': sq.addToQueue("6"); break;
+		        	case '7': sq.addToQueue("7"); break;
+		        	case '8': sq.addToQueue("8"); break;
+		        	case '9': sq.addToQueue("9"); break;
+		        	case '#': sq.addToQueue("#"); break;
+		        	case '*': sq.addToQueue("*"); break;
+		        	case 'a':
+		        	case 'A': sq.addToQueue("A"); break;
+		        	case 'b':
+		        	case 'B': sq.addToQueue("B"); break;
+		        	case 'c':
+		        	case 'C': sq.addToQueue("C"); break;
+		        	case 'd':
+		        	case 'D': sq.addToQueue("D"); break;
+		        	default:
+		    	}
 			}
 		}
 		
@@ -80,68 +97,53 @@ public class Dialer {
 				String st = "";
 				if (event.getSource() == btn0) { 
 					st = "0";
-					lyd.s0(100, 100);
 				}
 				if (event.getSource() == btn1) {
 					st = "1";
-					lyd.s1(100, 100);
 				}
 				if (event.getSource() == btn2) { 
 					st = "2";
-					lyd.s2(100, 100);
 				}
 				if (event.getSource() == btn3) { 
 					st = "3";
-					lyd.s3(100, 100);
 				}
 				if (event.getSource() == btn4) { 
 					st = "4";
-					lyd.s4(100, 100);
 				}
 				if (event.getSource() == btn5) { 
 					st = "5";
-					lyd.s5(100, 100);
 				}
 				if (event.getSource() == btn6) { 
 					st = "6";
-					lyd.s6(100, 100);
 				}
 				if (event.getSource() == btn7) { 
 					st = "7";
-					lyd.s7(100, 100);
 				}
 				if (event.getSource() == btn8) { 
 					st = "8";
-					lyd.s8(100, 100);
 				}
 				if (event.getSource() == btn9) { 
 					st = "9";
-					lyd.s9(100, 100);
 				}
 				if (event.getSource() == btnA) { 
 					st = "A";
-					lyd.sA(100, 100);
 				}
 				if (event.getSource() == btnB) { 
 					st = "B";
-					lyd.sB(100, 100);
 				}
 				if (event.getSource() == btnC) { 
 					st = "C";
-					lyd.sC(100, 100);
 				}
 				if (event.getSource() == btnD) { 
 					st = "D";
-					lyd.sD(100, 100);
 				}
 				if (event.getSource() == btnStar) { 
 					st = "*";
-					lyd.sStar(100, 100);
 				}
 				if (event.getSource() == btnHash) { 
 					st = "#";
-					lyd.sHash(100, 100);
 				}
+				sq.addToQueue(st);
 				statusLabel.setText("Status: " + st);
 			}
 		}

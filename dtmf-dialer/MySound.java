@@ -1,19 +1,83 @@
 import javax.sound.sampled.*;
 
-public class MySound {
+public class MySound implements Runnable {
 		float[] frekvenserx = new float[]{1209.0F, 1336.0F, 1477.0F, 1477.0F};
 		float[] frekvensery = new float[]{697.0F, 770.0F, 852.0F, 941.0F};
 		
+		String sQ = "";
+		Boolean playing = false;
+		public Boolean playQueue = false;
+		String lastPlayed;
+		
+		public void run() {
+			while (true) {
+				if (!playQueue) {
+					try { Thread.sleep(25); } catch (InterruptedException e) { }
+				} else {
+					if (sQ.length() > 0) {
+						playNext();
+					} else {
+						playQueue = false;
+					}
+				}
+			}
+		}
+		
 		public static void MySound (String[] args) {
-			//frekvenserx[0] = 1209.0F;
-			//frekvenserx[1] = 1336.0F;
-			//frekvenserx[2] = 1477.0F;
-			//frekvenserx[3] = 1477.0F;
-			//
-			//frekvensery[0] = 697.0F;
-			//frekvensery[1] = 770.0F;
-			//frekvensery[2] = 852.0F;
-			//frekvensery[3] = 941.0F;
+			
+		}
+		
+		public void addToQueue(String s) {
+			sQ = sQ + s;
+		}
+		
+		public void playQueue() {
+			playQueue = true;
+			// if (!playing && sQ.length() > 0) {
+			// 	playing = true;
+			// 	playNext();
+			// 	
+			// 	playQueue();
+			// }
+			// 
+			// if (sQ.length() < 1) {
+			// 	playing = false;
+			// }
+		}
+		
+		public void playNext() {
+			char s = sQ.charAt(0);
+			lastPlayed = Character.toString(s);
+			sQ = sQ.substring(1);
+			
+			switch (s) {
+				case '0': s0(100, 100); break;
+		        case '1': s1(100, 100); break;
+		        case '2': s2(100, 100); break;
+		        case '3': s3(100, 100); break;
+		        case '4': s4(100, 100); break;
+		        case '5': s5(100, 100); break;
+		        case '6': s6(100, 100); break;
+		        case '7': s7(100, 100); break;
+		        case '8': s8(100, 100); break;
+		        case '9': s9(100, 100); break;
+		        case '#': sHash(100, 100); break;
+		        case '*': sStar(100, 100); break;
+		        case 'a': 
+		        case 'A': sA(100, 100); break;
+		        case 'b': 
+		        case 'B': sB(100, 100); break;
+		        case 'c': 
+		        case 'C': sC(100, 100); break;
+		        case 'd': 
+		        case 'D': sD(100, 100); break;
+			}
+			
+			try {
+			Thread.sleep(500);
+			} catch (InterruptedException e) {
+			e.printStackTrace();
+			}
 		}
 		
 		public void s0(int l, int v) {
