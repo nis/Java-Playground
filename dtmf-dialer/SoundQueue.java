@@ -7,7 +7,7 @@ public class SoundQueue implements Runnable {
 	
 	static final int pauseBetweenTones = 0;
 	static final int pauseBetweenQueueChecks = 10;
-	static final int toneLength = 200;
+	static final int toneLength = 10000;
 	static final int toneVolume = 15;
 	
 	public SoundQueue() {
