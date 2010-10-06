@@ -16,7 +16,7 @@ public class MyListener implements Runnable {
 	
 	public void run() {
 		while (true) {
-			try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace();}
+			try { Thread.sleep(1); } catch (InterruptedException e) { e.printStackTrace();}
 			repaintGraph();
 		}
 	}
@@ -45,6 +45,11 @@ public class MyListener implements Runnable {
 			//Prepare the line for use.
 			targetDataLine.open(audioFormat);
 			targetDataLine.start();
+			
+			CaptureThread cT = new CaptureThread();
+			
+			Thread cThread = new Thread(cT);
+		    cThread.start();
 		} catch ( Exception e) {
 			System.out.println(e);
 			System.exit(0);
@@ -95,6 +100,28 @@ public class MyListener implements Runnable {
 		return frame;
 	}
 	
+	// Inner class to capture audio
+	class CaptureThread implements Runnable {
+		byte tBuffer[] = new byte[205];
+		
+		public void run () {
+			try {
+				while (true) {
+					int cnt = targetDataLine.read(tBuffer, 0, 204);
+					if (cnt > 0) {
+						// Do Goertzel here. On tBuffer.
+						// System.out.println("Buffer length: " + tBuffer.length);
+						// System.out.println("First value: " + tBuffer[0]);
+					}
+				}
+			} catch ( Exception e) {
+				System.out.println(e);
+				System.exit(0);
+			}
+		}
+	}
+	
+	// Inner class for the Frequency Equalizer component
 	class FreqEqComponent extends JComponent {
 		int[] widths = {0, 0, 0, 0, 0, 0, 0, 0};
 
