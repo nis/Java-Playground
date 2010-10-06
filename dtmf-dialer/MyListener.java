@@ -3,21 +3,28 @@ import javax.swing.*;
 import java.util.Random;
 import java.io.*;
 import javax.sound.sampled.*;
+import java.lang.Math;
+import java.text.DecimalFormat;
 
 public class MyListener implements Runnable {
 	JFrame lFrame;
 	FreqEqComponent fEQ = new FreqEqComponent(0, 10, 20, 30, 40, 50, 60, 70);
 	Random rand = new Random();
+	Float coeffs[] = {1.69159f, 1.62766f, 1.54949f, 1.45739f, 1.13905f, 0.969679f, 0.770426f, 0.539082f};
+	int fValues[] = {0, 0, 0, 0, 0, 0, 0, 0};
+	
+	int treshold = 25;
 	
 	// For Audiocapture
 	AudioFormat audioFormat;
 	TargetDataLine targetDataLine;
-	byte tBuffer[] = new byte[205];
+	byte tBuffer[] = new byte[208];
 	
 	public void run() {
 		while (true) {
-			try { Thread.sleep(1); } catch (InterruptedException e) { e.printStackTrace();}
-			repaintGraph();
+			try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace();}
+			//repaintGraph();
+			fEQ.repaint();
 		}
 	}
 	
@@ -57,10 +64,10 @@ public class MyListener implements Runnable {
 	}
 	
 	public void repaintGraph() {
-		int n = 100;
-		for (int i = 0; i < 8; i++) {
-			fEQ.setMyWidth(i, rand.nextInt(n+1));
-		}
+		// int n = 100;
+		// for (int i = 0; i < 8; i++) {
+		// 	fEQ.setMyWidth(i, rand.nextInt(n+1));
+		// }
 		fEQ.repaint();
 	}
 	
@@ -73,7 +80,7 @@ public class MyListener implements Runnable {
 	  private AudioFormat getAudioFormat(){
 	    float sampleRate = 8000.0F;
 	    //8000,11025,16000,22050,44100
-	    int sampleSizeInBits = 16;
+	    int sampleSizeInBits = 8;
 	    //8,16
 	    int channels = 1;
 	    //1,2
@@ -100,18 +107,83 @@ public class MyListener implements Runnable {
 		return frame;
 	}
 	
+	private int goertzel (Float coeff) {
+		Float q0 = 0f;
+		Float q1 = 0f;
+		Float q2 = 0f;
+		int magnitude = 0;
+		
+		for (int i = 0; i < 205 ; i++) {
+			q0 = tBuffer[i] + coeff * q1 - q2;
+			q2 = q1;
+			q1 = q0;
+			// System.out.print(tBuffer[i]);
+			// System.out.print(" ");
+		}
+		// System.out.print("\n");
+		//magnitude = Math.sqrt();
+		magnitude = (int) Math.sqrt((q1*q1)+(q2*q2)-(q1*q2*coeff));
+		
+		System.out.print("" + roundTwoDecimals(Math.sqrt((q1*q1)+(q2*q2)-(q1*q2*coeff))) + "\t");
+		
+		if (magnitude < treshold) {
+			magnitude = 0;
+		}
+		
+		// if (magnitude > 500) {
+		// 	//System.out.print("" + magnitude + "\n");
+		// 	magnitude = 10000;
+		// }
+		return magnitude;
+	}
+	
+	private void testFrequencies () {
+		int largestVal = 0;
+		int cVal = 0;
+		for (int i = 0; i < 8; i++) {
+			cVal = goertzel(coeffs[i]);
+			fValues[i] = cVal;
+			if (cVal > largestVal) {
+				largestVal = cVal;
+			}
+		}
+		
+		for (int i = 0; i < 8; i++) {
+			if (largestVal > 0) {
+				fValues[i] = (fValues[i]*100) / largestVal;
+			} else {
+				fValues[i] = 0;
+			}
+			//System.out.print(fValues[i] + " ");
+		}
+		
+		System.out.print("\n");
+	}
+	
+	double roundTwoDecimals(double d) {
+	        	DecimalFormat twoDForm = new DecimalFormat("#.##");
+			return Double.valueOf(twoDForm.format(d));
+	}
+	
 	// Inner class to capture audio
 	class CaptureThread implements Runnable {
 		
 		public void run () {
 			try {
+				
+				//int cnt = targetDataLine.read(tBuffer, 0, 204);
+				//targetDataLine.flush();
 				while (true) {
-					int cnt = targetDataLine.read(tBuffer, 0, 204);
+					int cnt = targetDataLine.read(tBuffer, 0, 208);
+					// System.out.println("Available: " + targetDataLine.available());
+					// System.out.println("Buffer length: " + tBuffer.length);
+					// System.out.println("First value: " + tBuffer[0]);
+					// System.out.println("Last value: " + tBuffer[203]);
+					testFrequencies();
+					//System.out.println(goertzel(1.45739f));
 					// Do Goertzel here. On tBuffer.
-					//System.out.println("Available: " + targetDataLine.available());
-					//System.out.println("Buffer length: " + tBuffer.length);
-					//System.out.println("First value: " + tBuffer[0]);
-					targetDataLine.flush();
+					//targetDataLine.flush();
+					try { Thread.sleep(10); } catch (InterruptedException e) { e.printStackTrace();}
 				}
 			} catch ( Exception e) {
 				System.out.println(e);
@@ -142,11 +214,11 @@ public class MyListener implements Runnable {
 			g2.drawString("1633", 5, 120);
 
 			g2.setColor(Color.BLACK);
-			Rectangle bar = new Rectangle(50, 8, widths[0], 5);
+			Rectangle bar = new Rectangle(50, 8, fValues[0], 5);
 			g2.fill(bar);
 			for (int i = 1; i < 8; i++) {
 				bar.translate(0 , 15);
-				bar.setSize(widths[i], 5);
+				bar.setSize(fValues[i], 5);
 				g2.fill(bar);
 			}
 		}
