@@ -12,7 +12,7 @@ public class MyListener implements Runnable {
 	// For Audiocapture
 	AudioFormat audioFormat;
 	TargetDataLine targetDataLine;
-	ByteArrayOutputStream byteArrayOutputStream;
+	byte tBuffer[] = new byte[205];
 	
 	public void run() {
 		while (true) {
@@ -102,17 +102,16 @@ public class MyListener implements Runnable {
 	
 	// Inner class to capture audio
 	class CaptureThread implements Runnable {
-		byte tBuffer[] = new byte[205];
 		
 		public void run () {
 			try {
 				while (true) {
 					int cnt = targetDataLine.read(tBuffer, 0, 204);
-					if (cnt > 0) {
-						// Do Goertzel here. On tBuffer.
-						// System.out.println("Buffer length: " + tBuffer.length);
-						// System.out.println("First value: " + tBuffer[0]);
-					}
+					// Do Goertzel here. On tBuffer.
+					//System.out.println("Available: " + targetDataLine.available());
+					//System.out.println("Buffer length: " + tBuffer.length);
+					//System.out.println("First value: " + tBuffer[0]);
+					targetDataLine.flush();
 				}
 			} catch ( Exception e) {
 				System.out.println(e);
