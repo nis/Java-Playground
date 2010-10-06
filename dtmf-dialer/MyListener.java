@@ -157,6 +157,12 @@ public class MyListener implements Runnable {
 			//System.out.print(fValues[i] + " ");
 		}
 		
+		if ((largestVal/10) > 25) {
+			treshold = largestVal/10;
+		} else {
+			treshold = 25;
+		}
+		
 		System.out.print("\n");
 	}
 	
