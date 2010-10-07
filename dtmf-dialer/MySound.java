@@ -1,7 +1,7 @@
 import javax.sound.sampled.*;
 
 public class MySound implements Runnable {
-		float[] frekvenserx = new float[]{1209.0F, 1336.0F, 1477.0F, 1477.0F};
+		float[] frekvenserx = new float[]{1209.0F, 1336.0F, 1477.0F, 1633.0F};
 		float[] frekvensery = new float[]{697.0F, 770.0F, 852.0F, 941.0F};
 		
 		String sQ = "";
