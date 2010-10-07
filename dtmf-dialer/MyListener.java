@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 public class MyListener implements Runnable {
 	JFrame lFrame;
-	FreqEqComponent fEQ = new FreqEqComponent(0, 10, 20, 30, 40, 50, 60, 70);
+	FreqEqComponent fEQ = new FreqEqComponent();
 	Random rand = new Random();
 	Float coeffs[] = {1.69159f, 1.62766f, 1.54949f, 1.45739f, 1.13905f, 0.969679f, 0.770426f, 0.539082f};
 	int fValues[] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -200,11 +200,6 @@ public class MyListener implements Runnable {
 	
 	// Inner class for the Frequency Equalizer component
 	class FreqEqComponent extends JComponent {
-		int[] widths = {0, 0, 0, 0, 0, 0, 0, 0};
-
-		public void setMyWidth(int aIn, int aVal) {
-			widths[aIn] = aVal;
-		}
 
 		public void paintComponent (Graphics g) {
 			Graphics2D g2 = (Graphics2D) g;
@@ -227,18 +222,6 @@ public class MyListener implements Runnable {
 				bar.setSize(fValues[i], 5);
 				g2.fill(bar);
 			}
-		}
-
-
-		public FreqEqComponent (int val0, int val1, int val2, int val3, int val4, int val5, int val6, int val7) {
-			widths[0] = val0;
-			widths[1] = val1;
-			widths[2] = val2;
-			widths[3] = val3;
-			widths[4] = val4;
-			widths[5] = val5;
-			widths[6] = val6;
-			widths[7] = val7;
 		}
 	}
 }
