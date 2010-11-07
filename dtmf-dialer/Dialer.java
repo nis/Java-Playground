@@ -29,8 +29,6 @@ public class Dialer {
 	
 	JLabel statusLabel = new JLabel();
 	
-	MySound lyd = new MySound();
-	
 	MyListener mListener = new MyListener();
 	
 	SoundQueue sq = new SoundQueue();
