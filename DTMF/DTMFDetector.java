@@ -6,7 +6,7 @@ import javax.sound.sampled.*;
 import java.lang.Math;
 import java.text.DecimalFormat;
 
-public class DTMFDetector implements Runnable {
+public class DTMFDetector {
 	// Sound
 	public int mixerIndex = 1;
 	public float sampleRate = 8000.0F; 			//8000,11025,16000,22050,44100
@@ -18,14 +18,32 @@ public class DTMFDetector implements Runnable {
 	// Goertzel
 	private Double[] coeffs = new Double[8];	// Goertzel coeeficients
 	private Float[] wham; 						// Hamming window vallues
-	public int treshold = 25;					// Treshold value
+	public int tresholdPercent = 50;			// Treshold value, how many percent of the highest magnitude should be let through
+	public int tresholdHard = 250;				// Treshold value anything below gets wiped
 	public int blockSize = 205;					// Number of samples for Goertzel
 	public int[] frequencies = {697, 770, 852, 941, 1209, 1336, 1477, 1633};
+	private Double[] magnitudes = {0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d};
+	//private int[] toneCounts = {0, 0, 0, 0, 0, 0, 0, 0}; // How many times a tone has been detected in a row
+	public int toneDetectionCount = 3;			// How many times a tone needs to be heard
+	public String currentTone = "";				// The tone currently being played
+	public String[][] tones = {
+								{"1", "2", "3", "A"},
+								{"4", "5", "6", "B"},
+								{"7", "8", "9", "C"},
+								{"*", "0", "#", "D"}
+							};
+	private int[][] tCount = {
+								{0, 0, 0, 0},
+								{0, 0, 0, 0},
+								{0, 0, 0, 0},
+								{0, 0, 0, 0}
+							};
 	
 	// Audiocapture
 	private AudioFormat audioFormat;
 	private TargetDataLine targetDataLine;
 	private byte tBuffer[] = new byte[208];		// Needs to be divisible by 4 and larger than blockSize
+	private int bufferDelay = 10;				// How many ms between the buffer is read
 	
 	// Internal
 	public boolean debug = true;				// More output for debugging
@@ -34,6 +52,125 @@ public class DTMFDetector implements Runnable {
 		mLog("Detector initiated");
 		mLog("");
 		computerCoeeficients();
+		setupCapture();
+		
+		CaptureThread cT = new CaptureThread();
+		Thread cThread = new Thread(cT);
+	    cThread.start();
+	}
+	
+	private void detectTones () {
+		int highestLow = -1;
+		int highestHigh = -1;
+		for (int i = 0; i < 8; i++) {
+			if (i < 4) {
+				if (magnitudes[i] > 0 && magnitudes[i] > highestLow) {
+					highestLow = i;
+				}
+			} else {
+				if (magnitudes[i] > 0 && magnitudes[i] > highestHigh) {
+					highestHigh = i-4;
+				}
+			}
+		}
+		
+		if (highestLow == -1 || highestHigh == -1) {
+			//mLog("No tone detected: "+highestLow+":"+highestHigh);
+			resetCounts();
+			currentTone = "";
+			return;
+		}
+		
+		// Increment if not high enough
+		if (tCount[highestLow][highestHigh] < toneDetectionCount) {
+			int temp = tCount[highestLow][highestHigh]++;
+			resetCounts();
+			tCount[highestLow][highestHigh] = temp;
+			return;
+		}
+		
+		if (tCount[highestLow][highestHigh] >= toneDetectionCount) {
+			currentTone = tones[highestLow][highestHigh];
+			mLog("Tone: " + tones[highestLow][highestHigh]);
+		}
+		
+		pCounts();
+		
+		//mLog("" + highestLow + ":" + highestHigh);
+		// String m = "";
+		// for (int i = 0; i < 8; i++) {
+		// 	m += magnitudes[i] + "\t";
+		// }
+		// mLog(m);
+		
+	}
+	
+	private void filterMagnitudes () {
+		Double highestMagnitude = 0d;
+		
+		// Find the highest magnitude
+		for (int i = 0; i < 8; i++) {
+			if (magnitudes[i] > highestMagnitude) {
+				highestMagnitude = magnitudes[i];
+			}
+		}
+		
+		// Mute magnitudes below tresholds
+		for (int i = 0; i < 8; i++) {
+			if (magnitudes[i] < tresholdHard || ((magnitudes[i]*100) / highestMagnitude) < tresholdPercent) {
+				magnitudes[i] = 0d;
+			}
+		}
+	}
+	
+	private void processBuffer () {
+		for (int i = 0; i < 8; i++) {
+			magnitudes[i] = goertzel(coeffs[i]);
+		}
+	}
+	
+	private Double goertzel (Double coeff) {
+		Double q0 = 0d;
+		Double q1 = 0d;
+		Double q2 = 0d;
+		
+		for (int i = 0; i < blockSize ; i++) {
+			// q0 = ( tBuffer[i]*wham[i] ) + coeff * q1 - q2;
+			q0 = ( tBuffer[i] ) + coeff * q1 - q2;
+			q2 = q1;
+			q1 = q0;
+		}
+		return (q1*q1)+(q2*q2)-(q1*q2*coeff);
+	}
+	
+	private void setupCapture() {
+		mLog("Setting up datacapture");
+		try {
+			// available mixers.
+			Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+
+			//Get everything set up for capture
+	      	audioFormat = new AudioFormat(
+		                      sampleRate,
+		                      sampleSizeInBits,
+		                      channels,
+		                      signed,
+		                      bigEndian);;
+
+	      	DataLine.Info dataLineInfo = new DataLine.Info( TargetDataLine.class, audioFormat);
+			Mixer mixer = AudioSystem.getMixer(mixerInfo[mixerIndex]);
+
+			//Get a TargetDataLine on the selected
+			// mixer.
+			targetDataLine = (TargetDataLine) mixer.getLine(dataLineInfo);
+			//Prepare the line for use.
+			targetDataLine.open(audioFormat);
+			targetDataLine.start();
+		
+		} catch ( Exception e) {
+			System.out.println(e);
+			System.exit(0);
+		}
 	}
 	
 	private void computerCoeeficients () {
@@ -47,9 +184,22 @@ public class DTMFDetector implements Runnable {
 		mLog("");
 	}
 	
+	private void pCounts() {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				System.out.print("" + tCount[i][j] + "	");
+			}
+			System.out.print("\n");
+		}
+		System.out.print("\n");
+	}
 	
-	public void run () {
-		
+	private void resetCounts() {
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+				tCount[i][j] = 0;
+			}
+		}
 	}
 	
 	private void mLog (String t) {
@@ -61,5 +211,25 @@ public class DTMFDetector implements Runnable {
 	public static void main (String[] args) {
 		DTMFDetector d = new DTMFDetector();
 		d.DTMFDetector();
+	}
+	
+	// Inner class to capture audio
+	class CaptureThread implements Runnable {
+		public void run () {
+			mLog("Capture thread running...");
+			try {
+				while (true) {
+					int cnt = targetDataLine.read(tBuffer, 0, 208);
+					//mLog("Buffer captured");
+					processBuffer();
+					filterMagnitudes();
+					detectTones();
+					try { Thread.sleep(bufferDelay); } catch (InterruptedException e) { e.printStackTrace();}
+				}
+			} catch ( Exception e) {
+				System.out.println(e);
+				System.exit(0);
+			}
+		}
 	}
 }
