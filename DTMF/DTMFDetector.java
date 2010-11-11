@@ -18,13 +18,13 @@ public class DTMFDetector {
 	// Goertzel
 	private Double[] coeffs = new Double[8];	// Goertzel coeeficients
 	private Float[] wham; 						// Hamming window vallues
-	public int tresholdPercent = 50;			// Treshold value, how many percent of the highest magnitude should be let through
-	public int tresholdHard = 250;				// Treshold value anything below gets wiped
+	public int tresholdPercent = 25;			// Treshold value, how many percent of the highest magnitude should be let through
+	public int tresholdHard = 50;				// Treshold value anything below gets wiped
 	public int blockSize = 205;					// Number of samples for Goertzel
 	public int[] frequencies = {697, 770, 852, 941, 1209, 1336, 1477, 1633};
 	private Double[] magnitudes = {0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d};
 	//private int[] toneCounts = {0, 0, 0, 0, 0, 0, 0, 0}; // How many times a tone has been detected in a row
-	public int toneDetectionCount = 3;			// How many times a tone needs to be heard
+	public int toneDetectionCount = 2;			// How many times a tone needs to be heard
 	public String currentTone = "";				// The tone currently being played
 	public String[][] tones = {
 								{"1", "2", "3", "A"},
@@ -74,35 +74,40 @@ public class DTMFDetector {
 			}
 		}
 		
+		
+		// 	1: No tone detected. -1 || -1
+		//	Reset and return
 		if (highestLow == -1 || highestHigh == -1) {
-			//mLog("No tone detected: "+highestLow+":"+highestHigh);
 			resetCounts();
 			currentTone = "";
 			return;
 		}
 		
-		// Increment if not high enough
+		// 	2: Tone detected, count not high enough
+		//	Reset and increment count for the tone
 		if (tCount[highestLow][highestHigh] < toneDetectionCount) {
-			int temp = tCount[highestLow][highestHigh]++;
+			int temp = tCount[highestLow][highestHigh];
+			temp++;
 			resetCounts();
 			tCount[highestLow][highestHigh] = temp;
 			return;
 		}
 		
-		if (tCount[highestLow][highestHigh] >= toneDetectionCount) {
-			currentTone = tones[highestLow][highestHigh];
-			mLog("Tone: " + tones[highestLow][highestHigh]);
+		//	3: Tone detected, count high enough, currentTone equal
+		//	Do nothing return.
+		if (tCount[highestLow][highestHigh] >= toneDetectionCount && currentTone.equals(tones[highestLow][highestHigh])) {
+			return;
 		}
 		
-		pCounts();
-		
-		//mLog("" + highestLow + ":" + highestHigh);
-		// String m = "";
-		// for (int i = 0; i < 8; i++) {
-		// 	m += magnitudes[i] + "\t";
-		// }
-		// mLog(m);
-		
+		//	4: Tone detected, count high enough, currentTone not equal
+		//	Set current tone
+		//	Tone detected!
+		//  Return
+		if (tCount[highestLow][highestHigh] >= toneDetectionCount && !currentTone.equals(tones[highestLow][highestHigh])) {
+			currentTone = tones[highestLow][highestHigh];
+			mLog("Tone: " + tones[highestLow][highestHigh]);
+			return;
+		}
 	}
 	
 	private void filterMagnitudes () {
@@ -220,11 +225,10 @@ public class DTMFDetector {
 			try {
 				while (true) {
 					int cnt = targetDataLine.read(tBuffer, 0, 208);
-					//mLog("Buffer captured");
 					processBuffer();
 					filterMagnitudes();
 					detectTones();
-					try { Thread.sleep(bufferDelay); } catch (InterruptedException e) { e.printStackTrace();}
+					//try { Thread.sleep(bufferDelay); } catch (InterruptedException e) { e.printStackTrace();}
 				}
 			} catch ( Exception e) {
 				System.out.println(e);
