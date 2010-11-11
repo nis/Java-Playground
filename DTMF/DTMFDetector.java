@@ -23,16 +23,15 @@ public class DTMFDetector {
 	public int blockSize = 205;					// Number of samples for Goertzel
 	public int[] frequencies = {697, 770, 852, 941, 1209, 1336, 1477, 1633};
 	private Double[] magnitudes = {0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d};
-	//private int[] toneCounts = {0, 0, 0, 0, 0, 0, 0, 0}; // How many times a tone has been detected in a row
-	public int toneDetectionCount = 2;			// How many times a tone needs to be heard
+	public int toneDetectionCount = 3;			// How many times a tone needs to be heard
 	public String currentTone = "";				// The tone currently being played
-	public String[][] tones = {
+	public String[][] tones = {					// What the tones are called
 								{"1", "2", "3", "A"},
 								{"4", "5", "6", "B"},
 								{"7", "8", "9", "C"},
 								{"*", "0", "#", "D"}
 							};
-	private int[][] tCount = {
+	private int[][] tCount = {					// How many times a tone have been detected in a row
 								{0, 0, 0, 0},
 								{0, 0, 0, 0},
 								{0, 0, 0, 0},
