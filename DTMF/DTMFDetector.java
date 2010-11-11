@@ -188,16 +188,6 @@ public class DTMFDetector {
 		mLog("");
 	}
 	
-	private void pCounts() {
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				System.out.print("" + tCount[i][j] + "	");
-			}
-			System.out.print("\n");
-		}
-		System.out.print("\n");
-	}
-	
 	private void resetCounts() {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
