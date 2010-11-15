@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 public class DTMFDetector {
 	// Sound
-	public int mixerIndex = 1;
+	public int mixerIndex = 1;					// 2 for line-in, 1 for mic.
 	public float sampleRate = 8000.0F; 			//8000,11025,16000,22050,44100
 	public int sampleSizeInBits = 8;			//8,16
 	public int channels = 1;					//1,2
@@ -23,7 +23,7 @@ public class DTMFDetector {
 	public int blockSize = 205;					// Number of samples for Goertzel
 	public int[] frequencies = {697, 770, 852, 941, 1209, 1336, 1477, 1633};
 	private Double[] magnitudes = {0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d};
-	public int toneDetectionCount = 3;			// How many times a tone needs to be heard
+	public int toneDetectionCount = 2;			// How many times a tone needs to be heard
 	public String currentTone = "";				// The tone currently being played
 	public String[][] tones = {					// What the tones are called
 								{"1", "2", "3", "A"},
@@ -46,16 +46,42 @@ public class DTMFDetector {
 	
 	// Internal
 	public boolean debug = true;				// More output for debugging
+	private CaptureThread cT;
+	private Thread cThread;
+	private Boolean threadDone = false;
 	
 	public void DTMFDetector () {
 		mLog("Detector initiated");
 		mLog("");
+	}
+	
+	public void startListener() {
+		mLog("Detector started");
+		mLog("");
+		
+		threadDone = false;
+		
 		computerCoeeficients();
 		setupCapture();
 		
-		CaptureThread cT = new CaptureThread();
-		Thread cThread = new Thread(cT);
+		cT = new CaptureThread();
+		cThread = new Thread(cT);
 	    cThread.start();
+	}
+	
+	public void stopListener() {
+		mLog("Detector stopped");
+		mLog("");
+		threadDone = true;
+		targetDataLine.stop();
+	}
+	
+	public boolean isRunning() {
+		if (!threadDone) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private void detectTones () {
@@ -205,6 +231,15 @@ public class DTMFDetector {
 	public static void main (String[] args) {
 		DTMFDetector d = new DTMFDetector();
 		d.DTMFDetector();
+		d.startListener();
+		
+		try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace();}
+		
+		d.stopListener();
+		
+		try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace();}
+		
+		d.startListener();
 	}
 	
 	// Inner class to capture audio
@@ -212,7 +247,7 @@ public class DTMFDetector {
 		public void run () {
 			mLog("Capture thread running...");
 			try {
-				while (true) {
+				while (!threadDone) {
 					int cnt = targetDataLine.read(tBuffer, 0, 208);
 					processBuffer();
 					filterMagnitudes();
