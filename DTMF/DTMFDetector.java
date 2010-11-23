@@ -228,20 +228,6 @@ public class DTMFDetector {
 		}
 	}
 	
-	public static void main (String[] args) {
-		DTMFDetector d = new DTMFDetector();
-		d.DTMFDetector();
-		d.startListener();
-		
-		// try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace();}
-		// 	
-		// 	d.stopListener();
-		// 	
-		// 	try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace();}
-		// 	
-		// 	d.startListener();
-	}
-	
 	// Inner class to capture audio
 	class CaptureThread implements Runnable {
 		public void run () {
