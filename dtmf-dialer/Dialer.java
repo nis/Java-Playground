@@ -29,7 +29,7 @@ public class Dialer {
 	
 	JLabel statusLabel = new JLabel();
 	
-	MyListener mListener = new MyListener();
+	//MyListener mListener = new MyListener();
 	
 	SoundQueue sq = new SoundQueue();
 	
@@ -56,8 +56,8 @@ public class Dialer {
 		Thread sT = new Thread(sq);
 		sT.start();
 		
-		Thread lT = new Thread(mListener);
-		lT.start();
+		//Thread lT = new Thread(mListener);
+		//lT.start();
 	}
 	
 	public void addListeners() {
