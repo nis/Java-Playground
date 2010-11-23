@@ -6,7 +6,7 @@ import javax.swing.JApplet;
 public class DTMFGenerator implements Runnable {
 	private Thread runner;
 	private DTMFTone dZero, dOne, dTwo, dThree, dFour, dFive, dSix, dSeven, dEight, dNine, dStar, dHash, dA, dB, dC, dD;
-	private String soundQueue = "";
+	public String soundQueue = "";
 	private Boolean isPLaying = false;
 	
 	public int pauseBetweenTones = 100;

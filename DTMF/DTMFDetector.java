@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 
 public class DTMFDetector {
 	// Communicator class, where detected tones are sent.
-	private DTMFCommunicator dCom;
+	public DTMFCommunicator dCom;
 	
 	// Sound
 	public int mixerIndex = 1;					// 2 for line-in, 1 for mic.
@@ -50,8 +50,7 @@ public class DTMFDetector {
 	private Thread cThread;
 	private Boolean threadDone = false;
 	
-	public void DTMFDetector (DTMFCommunicator com) {
-		dCom = com;
+	public void DTMFDetector() {
 		mLog("Detector initiated");
 		mLog("");
 	}

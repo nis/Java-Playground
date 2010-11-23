@@ -1,7 +1,10 @@
 public class Timer {
-	private static final long startTime = System.nanoTime();
+	private long startTime = System.nanoTime();
 	
-	public Timer () {
+	public Timer () {}
+	
+	public void restart () {
+		startTime = System.nanoTime();
 	}
 	
 	public long timeSinceStartInNS () {
