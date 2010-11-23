@@ -7,6 +7,9 @@ import java.lang.Math;
 import java.text.DecimalFormat;
 
 public class DTMFDetector {
+	// Communicator class, where detected tones are sent.
+	private DTMFCommunicator dCom;
+	
 	// Sound
 	public int mixerIndex = 1;					// 2 for line-in, 1 for mic.
 	public float sampleRate = 8000.0F; 			//8000,11025,16000,22050,44100
@@ -45,14 +48,19 @@ public class DTMFDetector {
 	private int bufferDelay = 10;				// How many ms between the buffer is read
 	
 	// Internal
-	public boolean debug = true;				// More output for debugging
+	public boolean debug = false;				// More output for debugging
 	private CaptureThread cT;
 	private Thread cThread;
 	private Boolean threadDone = false;
 	
-	public void DTMFDetector () {
+	public void DTMFDetector (DTMFCommunicator com) {
+		dCom = com;
 		mLog("Detector initiated");
 		mLog("");
+	}
+	
+	public void toneDetected(String t) {
+		dCom.newTone(t);
 	}
 	
 	public void startListener() {
@@ -131,6 +139,7 @@ public class DTMFDetector {
 		if (tCount[highestLow][highestHigh] >= toneDetectionCount && !currentTone.equals(tones[highestLow][highestHigh])) {
 			currentTone = tones[highestLow][highestHigh];
 			mLog("Tone: " + tones[highestLow][highestHigh]);
+			toneDetected(tones[highestLow][highestHigh]);
 			return;
 		}
 	}
