@@ -165,7 +165,7 @@ public class DTMFDetector {
 		Double q2 = 0d;
 		
 		for (int i = 0; i < blockSize ; i++) {
-			// q0 = ( tBuffer[i]*wham[i] ) + coeff * q1 - q2;
+			// q0 = ( tBuffer[i]*wham[i] ) + coeff * q1 - q2; // For Hamming windowing the samples.
 			q0 = ( tBuffer[i] ) + coeff * q1 - q2;
 			q2 = q1;
 			q1 = q0;
@@ -233,13 +233,13 @@ public class DTMFDetector {
 		d.DTMFDetector();
 		d.startListener();
 		
-		try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace();}
-		
-		d.stopListener();
-		
-		try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace();}
-		
-		d.startListener();
+		// try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace();}
+		// 	
+		// 	d.stopListener();
+		// 	
+		// 	try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace();}
+		// 	
+		// 	d.startListener();
 	}
 	
 	// Inner class to capture audio
