@@ -1,6 +1,3 @@
-// import java.awt.*;
-// import javax.swing.*;
-// import java.util.Random;
 import java.io.*;
 import javax.sound.sampled.*;
 import java.lang.Math;
