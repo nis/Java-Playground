@@ -7,9 +7,9 @@ public class DTMFGenerator implements Runnable {
 	private Thread runner;
 	private DTMFTone dZero, dOne, dTwo, dThree, dFour, dFive, dSix, dSeven, dEight, dNine, dStar, dHash, dA, dB, dC, dD;
 	public String soundQueue = "";
-	private Boolean isPLaying = false;
+	public Boolean isPLaying = false;
 	
-	public int pauseBetweenTones = 100;
+	public int pauseBetweenTones = 0;
 	public int pauseBetweenQueueChecks = 10;
 	
 	public DTMFGenerator () {
@@ -26,12 +26,14 @@ public class DTMFGenerator implements Runnable {
 	public void run () {
 		while (true) {
 			if (soundQueue.length() > 0) {
+				isPLaying = true;
 				int sL = soundQueue.length();
 				for (int i = 0; i < sL; i++) {
 					playNext();
 					try { Thread.sleep(pauseBetweenTones); } catch (InterruptedException e) { e.printStackTrace(); }
 				}
 			} else {
+				isPLaying = false;
 				try { Thread.sleep(pauseBetweenQueueChecks); } catch (InterruptedException e) { e.printStackTrace(); }
 			}
 		}
