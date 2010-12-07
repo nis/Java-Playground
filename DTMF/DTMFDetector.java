@@ -8,7 +8,7 @@ public class DTMFDetector {
 	public DTMFCommunicator dCom;
 	
 	// Sound
-	public int mixerIndex = 1;					// 2 for line-in, 1 for mic.
+	public int mixerIndex = 2;					// 2 for line-in, 1 for mic.
 	public float sampleRate = 8000.0F; 			//8000,11025,16000,22050,44100
 	public int sampleSizeInBits = 8;			//8,16
 	public int channels = 1;					//1,2

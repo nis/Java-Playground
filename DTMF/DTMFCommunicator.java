@@ -23,6 +23,13 @@ public class DTMFCommunicator {
 	public static void main (String[] args) {
 		DTMFCommunicator dC = new DTMFCommunicator();
 		dC.DTMFCommunicator();
+		
+		//dC.myTest();
+	}
+	
+	public void myTest() {
+		serverIP = "192.168.0.16";
+		System.out.println(crossum(Long.parseLong(cleanIP(serverIP))));
 	}
 	
 	public void DTMFCommunicator () {
@@ -61,8 +68,8 @@ public class DTMFCommunicator {
 		listenForCom = true;
 	}
 	
-	public String cleanIP () {
-		String parts[] = serverIP.split("\\.");
+	public String cleanIP (String ip) {
+		String parts[] = ip.split("\\.");
 		//serverIP.replaceAll("\\.", "")
 		for (int i = 0; i < parts.length; i++) {
 			while (parts[i].length() < 3) {
@@ -74,8 +81,23 @@ public class DTMFCommunicator {
 	}
 	
 	private void sendIP () {
-		dG.soundQueue = "*" + cleanIP() + "#";
-		System.out.println("Sending : *" + cleanIP() + "#");
+		dG.soundQueue = "*" + cleanIP(serverIP) + crossum(Long.parseLong(cleanIP(serverIP))) + "#";
+		System.out.println("Sending : *" + cleanIP(serverIP) + crossum(Long.parseLong(cleanIP(serverIP))) + "#");
+	}
+	
+	private long crossum (long t) {
+		long sum = 0l;
+		while(t > 0) {
+			//System.out.println("Sum: " + sum + " t: " + t);
+			sum = sum + t % 10;
+			t = t / 10;
+		}
+		
+		while (sum > 9) {
+			sum = crossum(sum);
+		}
+		
+		return sum;
 	}
 	
 	private void segmentDecide(String s) {
@@ -97,12 +119,23 @@ public class DTMFCommunicator {
 			listenForCom = true;
 		}
 		
-		if (!server && s.length() == 14) {
-			serverIP = s.substring(1, 4) + "." + s.substring(4, 7) + "." + s.substring(7, 10) + "." + s.substring(10, 13);
-			serverIP = serverIP.replaceAll("\\.0", ".");
-			serverIP = serverIP.replaceAll("\\.0", ".");
-			System.out.println("IP received: " + serverIP);
-			listenForCom = false;
+		if (!server && s.length() == 15) {
+			//System.out.println("Hep!");
+			String tIP = "";
+			tIP = s.substring(1, 4) + "." + s.substring(4, 7) + "." + s.substring(7, 10) + "." + s.substring(10, 13);
+			tIP = tIP.replaceAll("\\.0", ".");
+			tIP = tIP.replaceAll("\\.0", ".");
+			
+			if (crossum(Long.parseLong(cleanIP(tIP))) != Integer.parseInt(s.substring(13, 14))) {
+				System.out.println("Garbled IP received. Trying again.");
+				dG.soundQueue = "*A#";
+				while (dG.isPLaying) {
+					// Do nothing
+				}
+			} else {
+				System.out.println("IP received: " + tIP);
+				listenForCom = false;
+			}
 		}
 	}
 	
